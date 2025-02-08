@@ -56,8 +56,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String? myInputError;
-  TextEditingController myController = TextEditingController();
+  TextEditingController digit1 = TextEditingController();
+  TextEditingController digit2 = TextEditingController();
+  String? digit1error;
+  String? digit2error;
+  int result = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -68,33 +71,60 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Padding(
         padding: EdgeInsets.all(12),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              TextField(
-                controller: myController,
-                decoration: InputDecoration(
-                  label: const Text("Nome"),
-                  border: OutlineInputBorder(),
-                  error: (myInputError != null) ? Text(myInputError!) : null
-                ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            TextField(
+              controller: digit1,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                label: const Text("Cifra 1"),
+                errorText: digit1error
               ),
-              OutlinedButton(
+            ),
+            Icon(Icons.add),
+            TextField(
+              controller: digit2,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                label: const Text("Cifra 2"),
+                errorText: digit2error
+              ),
+            ),
+            OutlinedButton(
                 onPressed: () {
-                  if(myController.text.length < 10) {
-                    myInputError = "Devi inserire almeno 10 caratteri, ne hai inseriti ${myController.text.length}";
+                  RegExp rg = RegExp("[0-9]+\$");
+
+                  if(digit1.text.isEmpty) {
+                    digit1error = "Devi inserire una cifra";
+                  } else if(digit2.text.isEmpty) {
+                    digit2error = "Devi inserire una cifra";
+                  } else if (rg.allMatches(digit1.text).isEmpty) {
+                    digit1error = "Devi inserire un numero e non una stringa di testo";
+                  } else if (rg.allMatches(digit2.text).isEmpty) {
+                    digit2error = "Devi inserire un numero e non una stringa di testo";
                   } else {
-                    myInputError = null;
+                    digit1error = null;
+                    digit2error = null;
+
+                    result = int.parse(digit1.text) + int.parse(digit2.text);
                   }
                   setState(() {});
                 },
-                child: const Text("Cliccami")
+                child: Text("=")
+            ),
+            Text("Il risultato è"),
+            Text(
+              "$result",
+              style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold
               ),
-              Text(myController.text)
-            ]
-          ),
-        )
+            )
+          ]
+        ),
       ),
     );
   }
